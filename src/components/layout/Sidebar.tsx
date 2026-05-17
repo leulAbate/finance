@@ -37,9 +37,9 @@ export default function Sidebar({ userEmail }: { userEmail: string }) {
       {/* Logo — glossy header strip */}
       <div className="sidebar-header-gloss flex items-center gap-3 px-6 h-16">
         <div className="btn-gloss w-8 h-8 rounded-xl bg-primary flex items-center justify-center shrink-0 shadow-lg shadow-primary/30">
-          <span className="text-white text-sm font-bold">F</span>
+          <span className="text-white text-sm font-bold">B</span>
         </div>
-        <span className="text-sidebar-foreground font-semibold text-lg tracking-tight">Finance</span>
+        <span className="text-sidebar-foreground font-semibold text-lg tracking-tight">Birr&apos;e</span>
       </div>
 
       {/* Nav */}
