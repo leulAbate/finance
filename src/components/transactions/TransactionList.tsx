@@ -100,8 +100,9 @@ export default function TransactionList({
         <Select
           value={category}
           onValueChange={(val) => {
-            setCategory(val)
-            applyFilters(search, val, account)
+            const v = val ?? "all"
+            setCategory(v)
+            applyFilters(search, v, account)
           }}
         >
           <SelectTrigger className="w-44">
@@ -117,8 +118,9 @@ export default function TransactionList({
         <Select
           value={account}
           onValueChange={(val) => {
-            setAccount(val)
-            applyFilters(search, category, val)
+            const v = val ?? "all"
+            setAccount(v)
+            applyFilters(search, category, v)
           }}
         >
           <SelectTrigger className="w-44">

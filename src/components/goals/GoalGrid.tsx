@@ -296,7 +296,7 @@ function GoalForm({
 
           <div className="space-y-1.5">
             <label className="text-sm font-medium">Linked account <span className="text-muted-foreground">(optional)</span></label>
-            <Select value={accountId} onValueChange={setAccountId}>
+            <Select value={accountId} onValueChange={(val) => setAccountId(val ?? "none")}>
               <SelectTrigger>
                 <SelectValue placeholder="None" />
               </SelectTrigger>
