@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
-import { Check, ChevronDown, Plus, X } from "lucide-react"
+import { Check, ChevronDown, Plus, X, RotateCcw } from "lucide-react"
 
 interface Category {
   id: string
@@ -12,8 +12,9 @@ interface Category {
 
 interface Props {
   transactionId: string
-  current: string
-  onChanged?: (newCategory: string) => void
+  current: string | null   // null = unreviewed (inbox)
+  showRemove?: boolean     // show "Remove → back to inbox" option
+  onChanged?: (newCategory: string | null) => void
 }
 
 const GROUP_LABELS: Record<string, string> = {
@@ -23,7 +24,15 @@ const GROUP_LABELS: Record<string, string> = {
   exclude: "Exclude",
 }
 
-export default function CategoryPicker({ transactionId, current, onChanged }: Props) {
+async function saveCategory(transactionId: string, category: string | null) {
+  await fetch("/api/transactions/categorize", {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ transaction_id: transactionId, custom_category: category }),
+  })
+}
+
+export default function CategoryPicker({ transactionId, current, showRemove = false, onChanged }: Props) {
   const [open, setOpen] = useState(false)
   const [categories, setCategories] = useState<Category[]>([])
   const [selected, setSelected] = useState(current)
@@ -35,9 +44,7 @@ export default function CategoryPicker({ transactionId, current, onChanged }: Pr
   const ref = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    fetch("/api/categories")
-      .then((r) => r.json())
-      .then(setCategories)
+    fetch("/api/categories").then((r) => r.json()).then(setCategories)
   }, [])
 
   useEffect(() => {
@@ -51,16 +58,12 @@ export default function CategoryPicker({ transactionId, current, onChanged }: Pr
     return () => document.removeEventListener("mousedown", handleClick)
   }, [])
 
-  async function handleSelect(name: string) {
+  async function handleSelect(name: string | null) {
     if (name === selected) { setOpen(false); return }
     setSaving(true)
     setSelected(name)
     setOpen(false)
-    await fetch("/api/transactions/categorize", {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ transaction_id: transactionId, custom_category: name }),
-    })
+    await saveCategory(transactionId, name)
     setSaving(false)
     onChanged?.(name)
   }
@@ -91,16 +94,32 @@ export default function CategoryPicker({ transactionId, current, onChanged }: Pr
     <div ref={ref} className="relative">
       <button
         onClick={(e) => { e.stopPropagation(); setOpen(!open) }}
-        className="flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium transition-colors hover:opacity-80"
-        style={{ background: selectedCat ? `${selectedCat.color}20` : "#f1f5f9", color: selectedCat?.color ?? "#64748b" }}
+        className="flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium transition-colors hover:opacity-80 whitespace-nowrap"
+        style={{
+          background: selectedCat ? `${selectedCat.color}20` : "#f1f5f920",
+          color: selectedCat?.color ?? "#94a3b8",
+        }}
       >
-        {saving ? "…" : selected}
-        <ChevronDown className="w-3 h-3" />
+        {saving ? "…" : (selected ?? "Uncategorized")}
+        <ChevronDown className="w-3 h-3 shrink-0" />
       </button>
 
       {open && (
-        <div className="absolute left-0 top-full mt-1 z-50 w-52 bg-popover border border-border rounded-xl shadow-lg overflow-hidden">
+        <div className="absolute right-0 top-full mt-1 z-50 w-52 bg-popover border border-border rounded-xl shadow-lg overflow-hidden">
           <div className="max-h-72 overflow-y-auto py-1">
+            {/* Remove option — sends back to inbox */}
+            {showRemove && selected && (
+              <div className="border-b border-border/60 pb-1 mb-1">
+                <button
+                  onClick={() => handleSelect(null)}
+                  className="w-full flex items-center gap-2 px-3 py-1.5 hover:bg-muted text-sm text-muted-foreground text-left"
+                >
+                  <RotateCcw className="w-3.5 h-3.5" />
+                  Remove → back to inbox
+                </button>
+              </div>
+            )}
+
             {grouped.map(({ group, label, items }) => (
               <div key={group}>
                 <p className="px-3 py-1 text-xs font-semibold text-muted-foreground uppercase tracking-wider">{label}</p>

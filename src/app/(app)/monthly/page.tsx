@@ -28,6 +28,7 @@ export default async function MonthlyPage({
       .from("transactions")
       .select("id, amount, category, custom_category, description, merchant_name, date, pending, account:accounts(id, name, type)")
       .eq("user_id", user!.id)
+      .eq("reviewed", true)
       .gte("date", firstOfMonth)
       .lte("date", lastOfMonth)
       .order("date", { ascending: false }),
@@ -35,6 +36,7 @@ export default async function MonthlyPage({
       .from("transactions")
       .select("amount, category")
       .eq("user_id", user!.id)
+      .eq("reviewed", true)
       .gte("date", firstOfPrev)
       .lte("date", lastOfPrev),
   ])
@@ -45,6 +47,7 @@ export default async function MonthlyPage({
     <div className="flex flex-col h-full">
       <PageHeader title="Monthly Review" description={monthLabel} />
       <MonthlyView
+        key={month}
         transactions={current ?? []}
         previousTransactions={previous ?? []}
         month={month ?? `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`}

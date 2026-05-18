@@ -15,6 +15,7 @@ export default async function TransactionsPage({
     .from("transactions")
     .select("id, amount, date, description, merchant_name, category, custom_category, pending, logo_url, account:accounts(id, name, type, institution:institutions(institution_name, logo_url))")
     .eq("user_id", user!.id)
+    .eq("reviewed", true)
     .order("date", { ascending: false })
     .limit(200)
 

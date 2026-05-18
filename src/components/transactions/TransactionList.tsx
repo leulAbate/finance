@@ -51,7 +51,7 @@ export default function TransactionList({
     router.push(`${pathname}?${params.toString()}`)
   }
 
-  function handleCategoryChanged(txnId: string, newCategory: string) {
+  function handleCategoryChanged(txnId: string, newCategory: string | null) {
     setTxns((prev) => prev.map((t) => t.id === txnId ? { ...t, custom_category: newCategory } : t))
   }
 

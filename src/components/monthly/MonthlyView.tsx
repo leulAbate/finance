@@ -8,7 +8,7 @@ import {
   ChevronLeft, ChevronRight, TrendingUp, TrendingDown,
   Minus, ChevronDown, ChevronUp
 } from "lucide-react"
-import { resolveCategory } from "@/lib/categories/rules"
+import { resolveCategory, DEFAULT_CATEGORIES } from "@/lib/categories/rules"
 import CategoryPicker from "@/components/transactions/CategoryPicker"
 
 const fmt = (n: number) =>
@@ -100,12 +100,14 @@ function calcSummary(txns: Transaction[]) {
 
 export default function MonthlyView({ transactions, previousTransactions, month }: Props) {
   const router = useRouter()
-  const [customCategories, setCustomCategories] = useState<CustomCategory[]>([])
+  const [customCategories, setCustomCategories] = useState<CustomCategory[]>(DEFAULT_CATEGORIES)
   const [expanded, setExpanded] = useState<Set<string>>(new Set())
   const [txns, setTxns] = useState(transactions)
 
   useEffect(() => {
-    fetch("/api/categories").then((r) => r.json()).then(setCustomCategories)
+    fetch("/api/categories").then((r) => r.json()).then((cats) => {
+      if (cats?.length) setCustomCategories(cats)
+    })
   }, [])
 
   function getGroup(catName: string): Group {
@@ -113,7 +115,7 @@ export default function MonthlyView({ transactions, previousTransactions, month 
     return (found?.group_type ?? "wants") as Group
   }
 
-  function handleCategoryChanged(txnId: string, newCategory: string) {
+  function handleCategoryChanged(txnId: string, newCategory: string | null) {
     setTxns((prev) => prev.map((t) => t.id === txnId ? { ...t, custom_category: newCategory } : t))
   }
 
