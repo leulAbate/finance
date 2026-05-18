@@ -13,11 +13,15 @@ import {
   LogOut,
   CalendarDays,
   Inbox,
+  Activity,
+  Sparkles,
 } from "lucide-react"
 
 const navItems = [
   { href: "/dashboard",    label: "Dashboard",    icon: LayoutDashboard },
   { href: "/monthly",      label: "Monthly",      icon: CalendarDays },
+  { href: "/pulse",        label: "Pulse",        icon: Activity },
+  { href: "/insights",     label: "Insights",     icon: Sparkles },
   { href: "/inbox",        label: "Inbox",        icon: Inbox },
   { href: "/transactions", label: "Transactions", icon: ArrowLeftRight },
   { href: "/budgets",      label: "Budgets",      icon: PieChart },
