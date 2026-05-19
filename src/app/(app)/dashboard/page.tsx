@@ -23,8 +23,9 @@ export default async function DashboardPage() {
       .eq("user_id", user!.id),
     supabase
       .from("transactions")
-      .select("date, amount, category, description, merchant_name, pending, account:accounts(name)")
+      .select("id, date, amount, category, custom_category, description, merchant_name, pending, account:accounts(name)")
       .eq("user_id", user!.id)
+      .eq("reviewed", true)
       .gte("date", new Date(new Date().setMonth(new Date().getMonth() - 6)).toISOString().split("T")[0])
       .order("date", { ascending: false }),
   ])

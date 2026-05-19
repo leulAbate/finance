@@ -11,17 +11,25 @@ import {
   Target,
   Settings,
   LogOut,
+  CalendarDays,
+  Inbox,
+  Activity,
+  Sparkles,
 } from "lucide-react"
 
 const navItems = [
   { href: "/dashboard",    label: "Dashboard",    icon: LayoutDashboard },
+  { href: "/monthly",      label: "Monthly",      icon: CalendarDays },
+  { href: "/pulse",        label: "Pulse",        icon: Activity },
+  { href: "/insights",     label: "Insights",     icon: Sparkles },
+  { href: "/inbox",        label: "Inbox",        icon: Inbox },
   { href: "/transactions", label: "Transactions", icon: ArrowLeftRight },
   { href: "/budgets",      label: "Budgets",      icon: PieChart },
   { href: "/accounts",     label: "Accounts",     icon: Landmark },
   { href: "/goals",        label: "Goals",        icon: Target },
 ]
 
-export default function Sidebar({ userEmail }: { userEmail: string }) {
+export default function Sidebar({ userEmail, inboxCount = 0 }: { userEmail: string; inboxCount?: number }) {
   const pathname = usePathname()
   const router = useRouter()
 
@@ -46,6 +54,7 @@ export default function Sidebar({ userEmail }: { userEmail: string }) {
       <nav className="flex-1 px-3 py-4 space-y-0.5">
         {navItems.map(({ href, label, icon: Icon }) => {
           const active = pathname === href || pathname.startsWith(href + "/")
+          const showBadge = href === "/inbox" && inboxCount > 0
           return (
             <Link
               key={href}
@@ -57,7 +66,12 @@ export default function Sidebar({ userEmail }: { userEmail: string }) {
               }`}
             >
               <Icon className="w-4.5 h-4.5 shrink-0" />
-              {label}
+              <span className="flex-1">{label}</span>
+              {showBadge && (
+                <span className="ml-auto text-xs font-semibold bg-primary text-white rounded-full px-1.5 py-0.5 min-w-[1.25rem] text-center leading-none">
+                  {inboxCount > 99 ? "99+" : inboxCount}
+                </span>
+              )}
             </Link>
           )
         })}

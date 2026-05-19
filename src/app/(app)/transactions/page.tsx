@@ -13,8 +13,9 @@ export default async function TransactionsPage({
 
   let query = supabase
     .from("transactions")
-    .select("*, account:accounts(id, name, type, institution:institutions(institution_name, logo_url))")
+    .select("id, amount, date, description, merchant_name, category, custom_category, pending, logo_url, account:accounts(id, name, type, institution:institutions(institution_name, logo_url))")
     .eq("user_id", user!.id)
+    .eq("reviewed", true)
     .order("date", { ascending: false })
     .limit(200)
 
@@ -57,7 +58,6 @@ export default async function TransactionsPage({
       <PageHeader title="Transactions" description={`${transactions?.length ?? 0} transactions`} />
       <TransactionList
         transactions={transactions ?? []}
-        categories={categories}
         accounts={accounts ?? []}
       />
     </div>

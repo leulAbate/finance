@@ -12,9 +12,16 @@ export default async function AppLayout({
 
   if (!user) redirect("/login")
 
+  const { count: inboxCount } = await supabase
+    .from("transactions")
+    .select("id", { count: "exact", head: true })
+    .eq("user_id", user.id)
+    .eq("reviewed", false)
+    .gt("amount", 0)
+
   return (
     <div className="flex h-screen overflow-hidden">
-      <Sidebar userEmail={user.email ?? ""} />
+      <Sidebar userEmail={user.email ?? ""} inboxCount={inboxCount ?? 0} />
       <main className="flex-1 overflow-y-auto bg-background">
         {children}
       </main>

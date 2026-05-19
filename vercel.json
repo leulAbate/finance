@@ -4,5 +4,6 @@
       "path": "/api/plaid/sync",
       "schedule": "0 8 * * *"
     }
-  ]
+  ],
+  "ignoreCommand": "exit 1"
 }
